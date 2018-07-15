@@ -1,7 +1,10 @@
-package com.zhou.life.life;
+package com.zhou.life.cards;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.zhou.life.R;
+
 
 public class MainActivity extends AppCompatActivity {
 

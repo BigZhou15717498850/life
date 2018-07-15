@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "com.zhou.life.life"
+        applicationId "com.zhou.life"
         minSdkVersion 15
         targetSdkVersion 26
         versionCode 1
@@ -15,7 +15,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    
+
     buildTypes {
         release {
             minifyEnabled false
