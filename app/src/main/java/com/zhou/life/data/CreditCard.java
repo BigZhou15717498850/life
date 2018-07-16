@@ -86,6 +86,13 @@ public class CreditCard {
           return "";
      }
 
+     public boolean paymentComplete(){
+          if(repayment==null||repayment.equals("")){
+               return false;
+          }
+          return repayment.compareTo(mBill) >= 0;
+     }
+
      public String getRepayment() {
           return repayment;
      }
