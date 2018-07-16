@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Life</string>
+    <string name="bill">账单:%s</string>
 </resources>
