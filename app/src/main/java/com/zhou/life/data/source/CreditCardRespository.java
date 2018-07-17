@@ -75,7 +75,9 @@ public class CreditCardRespository implements CreditCardDataSource {
         checkNotNull(cardNumber);
         CreditCard creditCard = getCardWithNum(cardNumber);
         if(creditCard!=null)return Flowable.just(Optional.of(creditCard));
-
+        if(mCreditCardCaches == null){
+            mCreditCardCaches = new LinkedHashMap<>();
+        }
         return getCardWithNumFromLocalSource(cardNumber);
     }
 
@@ -112,7 +114,7 @@ public class CreditCardRespository implements CreditCardDataSource {
     }
 
     @Override
-    public void bill(CreditCard creditCard, String money) {
+    public void bill(CreditCard creditCard, float money) {
         checkNotNull(creditCard);
         checkNotNull(money);
         mCreditCardLocalDataSource.bill(creditCard,money);
@@ -121,7 +123,7 @@ public class CreditCardRespository implements CreditCardDataSource {
                 creditCard.getDateBill(),
                 creditCard.getDateRepayment(),
                 money,
-                "");
+                0.0f);
         if(mCreditCardCaches==null)mCreditCardCaches = new LinkedHashMap<>();
         mCreditCardCaches.put(newCreditCard.getCardNumber(),newCreditCard);
     }
@@ -132,22 +134,23 @@ public class CreditCardRespository implements CreditCardDataSource {
      * @param money
      */
     @Override
-    public void repayment(CreditCard creditCard, String money) {
+    public void repayment(CreditCard creditCard, float money) {
         checkNotNull(creditCard);
         checkNotNull(money);
+        float totalRepayment = creditCard.getRepayment() + money;
         mCreditCardLocalDataSource.repayment(creditCard,money);
         CreditCard newCreditCard = new CreditCard(creditCard.getBankname(),
                 creditCard.getCardNumber(),
-                creditCard.getNextDateBill(),
-                creditCard.getNextDateRepayment(),
-                creditCard.getBill(),
-                money);
+                totalRepayment >= creditCard.getBill() ? creditCard.getNextDateBill() :creditCard.getDateBill() ,
+                totalRepayment >= creditCard.getBill() ? creditCard.getNextDateRepayment() : creditCard.getDateRepayment(),
+                totalRepayment >= creditCard.getBill() ? 0.0f : creditCard.getBill(),
+                creditCard.getRepayment() + money);
         if(mCreditCardCaches==null)mCreditCardCaches = new LinkedHashMap<>();
         mCreditCardCaches.put(newCreditCard.getCardNumber(),newCreditCard);
     }
 
     @Override
-    public void bill(String cardNumber, String money) {
+    public void bill(String cardNumber, float money) {
         checkNotNull(cardNumber);
         checkNotNull(money);
         CreditCard creditCard = getCardWithNum(cardNumber);

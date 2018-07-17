@@ -2,6 +2,7 @@ package com.zhou.life.data.source;
 
 import android.content.Context;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.zhou.life.data.CreditCard;
 
@@ -10,12 +11,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.subscribers.TestSubscriber;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -99,35 +104,85 @@ public class CreditCardRespositoryTest {
         CreditCard creditCard = new CreditCard("中国人大","1234","07-08","07-18");
 
         mCreditCardRespository.saveCreditCard(creditCard);
-        mCreditCardRespository.bill(creditCard,"1256");
+        mCreditCardRespository.bill(creditCard,1256f);
 
-        verify(mCreditCardLocalDataSource).bill(creditCard,"1256");
+        verify(mCreditCardLocalDataSource).bill(creditCard,1256f);
 
         assertThat(mCreditCardRespository.mCreditCardCaches.size(),is(1));
-        assertThat(mCreditCardRespository.mCreditCardCaches.get(creditCard.getCardNumber()).getBill(),is("1256"));
+        assertThat(mCreditCardRespository.mCreditCardCaches.get(creditCard.getCardNumber()).getBill(),is(1256f));
+    }
+    @Test
+    public void repaymentCard_repaymentsCardToServiceApi(){
+        CreditCard creditCard = new CreditCard("中国人大","1234","07-08","07-19",5623);
+
+        mCreditCardRespository.saveCreditCard(creditCard);
+        mCreditCardRespository.repayment(creditCard,2333);
+
+        verify(mCreditCardLocalDataSource).repayment(creditCard,2333);
+        CreditCard newCreditCard = mCreditCardRespository.mCreditCardCaches.get(creditCard.getCardNumber());
+        assertThat(newCreditCard.getRepayment(),is(2333f));
+        assertThat(newCreditCard.getBill(),is(5623f));
+        assertThat(newCreditCard.getDateBill(),is("07-08"));
+        assertThat(newCreditCard.getDateRepayment(),is("07-19"));
+    }
+    @Test
+    public void getCard_getCardFromLocalData(){
+        CreditCard creditCard = new CreditCard("中国地大物博", "123456789", "07-12", "07-26");
+        Optional<CreditCard> cardOptional = Optional.of(creditCard);
+
+        setCardAvailable(mCreditCardLocalDataSource,cardOptional);
+
+        TestSubscriber<Optional> testSubscriber = new TestSubscriber<>();
+        mCreditCardRespository.getCreditCard(creditCard.getCardNumber()).subscribe(testSubscriber);
+
+        verify(mCreditCardLocalDataSource).getCreditCard(creditCard.getCardNumber());
+
+        testSubscriber.assertValue(cardOptional);
     }
 
     @Test
-    public void billCard_billsCardNoOverBillDateToServiceApi(){
-        CreditCard creditCard = new CreditCard("中国人大","1234","08-08","08-18");
+    public void getCard_getCardLocalDataNotAvailabe_fails(){
+        CreditCard creditCard = new CreditCard("中国地大物博", "123456789", "07-12", "07-26");
+        Optional<CreditCard> cardOptional = Optional.of(creditCard);
 
+        setCardNotAvailable(mCreditCardLocalDataSource,creditCard.getCardNumber());
+
+        TestSubscriber<Optional> testSubscriber = new TestSubscriber<>();
+        mCreditCardRespository.getCreditCard(creditCard.getCardNumber()).subscribe(testSubscriber);
+
+        verify(mCreditCardLocalDataSource).getCreditCard(creditCard.getCardNumber());
+        testSubscriber.assertValue(Optional.absent());
+    }
+    @Test
+    public void deleteCard_deletesCardToServiceApi(){
+        CreditCard creditCard = new CreditCard("中国地大物博", "123456789", "07-12", "07-26");
         mCreditCardRespository.saveCreditCard(creditCard);
-        mCreditCardRespository.bill(creditCard,"1256");
 
-        verify(mCreditCardLocalDataSource).bill(creditCard,"1256");
+        verify(mCreditCardLocalDataSource).saveCreditCard(creditCard);
 
         assertThat(mCreditCardRespository.mCreditCardCaches.size(),is(1));
-        assertThat(mCreditCardRespository.mCreditCardCaches.get(creditCard.getCardNumber()).getBill(),is(""));
+
+        mCreditCardRespository.deleteCreditCard(creditCard.getCardNumber());
+
+        verify(mCreditCardLocalDataSource).deleteCreditCard(creditCard.getCardNumber());
+
+        assertThat(mCreditCardRespository.mCreditCardCaches.size(),is(0));
     }
 
-    public void repaymentCard_repaymentsCardToServiceApi(){
-        CreditCard creditCard = new CreditCard("中国人大","1234","08-08","08-18","5623");
-
-        mCreditCardRespository.saveCreditCard(creditCard);
-        //mCreditCardRespository
-    }
     private void setCardsAvailable(CreditCardDataSource dataSource,List<CreditCard> creditCards) {
         when(dataSource.getCreditCards()).thenReturn(Flowable.just(creditCards).concatWith(Flowable.never()));
+    }
+
+    private void setCardsNotAvailable(CreditCardDataSource dataSource) {
+        when(dataSource.getCreditCards()).thenReturn(Flowable.just(Collections.emptyList()));
+    }
+
+    private void setCardAvailable(CreditCardDataSource dataSource,Optional<CreditCard> creditCard) {
+        when(dataSource.getCreditCard(eq(creditCard.get().getCardNumber()))).thenReturn(Flowable.just(creditCard).concatWith(Flowable.never()));
+    }
+
+    private void setCardNotAvailable(CreditCardDataSource dataSource,String number) {
+        when(dataSource.getCreditCard(eq(number))).thenReturn(Flowable.just(Optional.absent()));
     }
 
 

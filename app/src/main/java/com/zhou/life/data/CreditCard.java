@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import com.google.common.base.Objects;
 import com.zhou.life.utils.TimeUtil;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * 作者 ly309313
  * 日期 2018/7/15
@@ -35,13 +37,13 @@ public class CreditCard {
      @NonNull
      private final  String dateRepayment;
 
-     private final String mBill;
+     private final float mBill;
 
-     private final String repayment;
+     private final float repayment;
 
 
      public CreditCard(@NonNull String bankname, @NonNull String cardNumber,
-                       @NonNull String dateBill, @NonNull String dateRepayment, String bill, String repayment) {
+                       @NonNull String dateBill, @NonNull String dateRepayment, float bill, float repayment) {
           this.bankname = bankname;
           this.cardNumber = cardNumber;
           this.dateBill = dateBill;
@@ -51,13 +53,13 @@ public class CreditCard {
      }
 
      public CreditCard(@NonNull String bankname, @NonNull String cardNumber,
-                       @NonNull String dateBill, @NonNull String dateRepayment, String bill) {
-          this(bankname,cardNumber,dateBill,dateRepayment,bill,"");
+                       @NonNull String dateBill, @NonNull String dateRepayment, float bill) {
+          this(bankname,cardNumber,dateBill,dateRepayment,bill,0.0f);
      }
 
      public CreditCard(@NonNull String bankname, @NonNull String cardNumber,
                        @NonNull String dateBill, @NonNull String dateRepayment) {
-          this(bankname,cardNumber,dateBill,dateRepayment,"","");
+          this(bankname,cardNumber,dateBill,dateRepayment,0.0f,0.0f);
      }
      @NonNull
      public String getBankname() {
@@ -79,21 +81,24 @@ public class CreditCard {
           return dateRepayment;
      }
 
-     public String getBill() {
-          if(TimeUtil.overBillDate(dateBill)){
-               return mBill;
-          }
-          return "";
+     public float getBill() {
+          return mBill;
      }
 
+     public boolean voerBillDate(){
+          return TimeUtil.overBillDate(dateBill);
+     }
      public boolean paymentComplete(){
-          if(repayment==null||repayment.equals("")){
+          if(repayment==0.0f && mBill>0){
                return false;
           }
-          return repayment.compareTo(mBill) >= 0;
+          return repayment >= mBill;
      }
 
-     public String getRepayment() {
+     public boolean paymentActive(){
+          return mBill > 0 && repayment < mBill;
+     }
+     public float getRepayment() {
           return repayment;
      }
 

@@ -75,8 +75,8 @@ public class CreditCardLocalDataSource implements CreditCardDataSource {
         String cardNum = cursor.getString(cursor.getColumnIndex(CreditCardEntry.CARD_NUM));
         String datebill = cursor.getString(cursor.getColumnIndex(CreditCardEntry.DATE_BILL));
         String dateRepayment = cursor.getString(cursor.getColumnIndex(CreditCardEntry.DATE_REPAYMENT));
-        String bill = cursor.getString(cursor.getColumnIndex(CreditCardEntry.BILL));
-        String repayment = cursor.getString(cursor.getColumnIndex(CreditCardEntry.REPAYMENT));
+        float bill = cursor.getFloat(cursor.getColumnIndex(CreditCardEntry.BILL));
+        float repayment = cursor.getFloat(cursor.getColumnIndex(CreditCardEntry.REPAYMENT));
         return new CreditCard(bankname, cardNum, datebill, dateRepayment, bill, repayment);
     }
 
@@ -136,7 +136,7 @@ public class CreditCardLocalDataSource implements CreditCardDataSource {
     }
 
     @Override
-    public void bill(CreditCard creditCard, String money) {
+    public void bill(CreditCard creditCard, float money) {
         checkNotNull(creditCard);
         bill(creditCard.getCardNumber(),money);
         ContentValues values = new ContentValues();
@@ -149,20 +149,23 @@ public class CreditCardLocalDataSource implements CreditCardDataSource {
     }
 
     @Override
-    public void repayment(CreditCard creditCard, String money) {
+    public void repayment(CreditCard creditCard, float money) {
         checkNotNull(creditCard);
+        float totalPayment = creditCard.getRepayment() + money;
         ContentValues values = new ContentValues();
-        values.put(CreditCardEntry.REPAYMENT,money);
-        values.put(CreditCardEntry.DATE_REPAYMENT,creditCard.getNextDateRepayment());
-        values.put(CreditCardEntry.DATE_BILL,creditCard.getNextDateBill());
-
+        values.put(CreditCardEntry.REPAYMENT,totalPayment);
+        if(totalPayment >= creditCard.getBill()){
+            values.put(CreditCardEntry.DATE_REPAYMENT,creditCard.getNextDateRepayment());
+            values.put(CreditCardEntry.DATE_BILL,creditCard.getNextDateBill());
+            values.put(CreditCardEntry.BILL,0.0f);
+        }
         String selection = CreditCardEntry.CARD_NUM + " LIKE ?";
         String[] args = {creditCard.getCardNumber()};
         mDatabaseHelper.update(CreditCardEntry.TABLE_NAME,SQLiteDatabase.CONFLICT_IGNORE,values,selection,args);
     }
 
     @Override
-    public void bill(String cardNumber, String money) {
+    public void bill(String cardNumber, float money) {
         checkNotNull(cardNumber);
         ContentValues values = new ContentValues();
         values.put(CreditCardEntry.BILL,money);

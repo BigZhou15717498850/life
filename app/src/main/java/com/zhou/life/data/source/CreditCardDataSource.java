@@ -29,7 +29,7 @@ public interface CreditCardDataSource {
      * @param creditCard
      * @param money
      */
-    void bill(CreditCard creditCard,String money);
+    void bill(CreditCard creditCard,float money);
 
     /**
      * 如果款项已还清，则账单日和还款日更新到下一个月
@@ -37,8 +37,8 @@ public interface CreditCardDataSource {
      * @param creditCard
      * @param money
      */
-    void repayment(CreditCard creditCard,String money);
+    void repayment(CreditCard creditCard,float money);
 
-    void bill(String cardNumber,String money);
+    void bill(String cardNumber,float money);
 
 }
