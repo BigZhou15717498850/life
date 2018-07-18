@@ -32,6 +32,12 @@ public class CreditCardsContract {
 
        void showActiveCreditCardFileter();
 
+       void showAddCreditCards();
+
+       void showCreditCardBilled();
+
+       void showCreditCardRepayment();
+
        void showCreateNewCreditCardSuccessFully();
 
        void isActive();

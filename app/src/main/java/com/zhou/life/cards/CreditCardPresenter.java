@@ -3,11 +3,10 @@ package com.zhou.life.cards;
 import com.zhou.life.data.CreditCard;
 import com.zhou.life.data.source.CreditCardRespository;
 import com.zhou.life.utils.schedulers.BaseSchedulerProvider;
-import com.zhou.life.utils.schedulers.SchedulerProvider;
 
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Flowable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -33,7 +32,9 @@ public class CreditCardPresenter implements CreditCardsContract.Presenter {
     @NonNull
     private final CompositeDisposable mCompositeDisposable;
 
-    public CreditCardPresenter(CreditCardRespository mCreditCardRespository, CreditCardsContract.View mView, BaseSchedulerProvider mSchedulerProvider) {
+    public CreditCardPresenter(@NonNull CreditCardRespository mCreditCardRespository,
+                               @NonNull CreditCardsContract.View mView,
+                               @NonNull BaseSchedulerProvider mSchedulerProvider) {
         this.mCreditCardRespository = checkNotNull(mCreditCardRespository);
         this.mView = checkNotNull(mView);
         this.mSchedulerProvider = mSchedulerProvider;
@@ -42,42 +43,107 @@ public class CreditCardPresenter implements CreditCardsContract.Presenter {
 
     @Override
     public void loadCreditCards() {
-        Disposable disposable = mCreditCardRespository.getCreditCards().observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<CreditCard>>() {
-            @Override
-            public void accept(List<CreditCard> creditCards) throws Exception {
-                mView.showCreditCards(creditCards);
-            }
-        });
+        mCompositeDisposable.clear();
+        Disposable disposable = mCreditCardRespository
+                .getCreditCards()
+                .flatMap(Flowable::fromIterable)
+                .filter(creditCard -> {
+                    switch (mCurrFilterType){
+                        case ACTIVE_CARDS:
+                            return creditCard.paymentActive();
+                        case COMPLETED_CARDS:
+                            return creditCard.paymentComplete();
+                        case ALL_CARDS:
+                            default:
+                            return true;
+                    }
+                })
+                .toList()
+                .subscribeOn(mSchedulerProvider.io())
+                .observeOn(mSchedulerProvider.ui())
+                .subscribe(new Consumer<List<CreditCard>>() {
+                        @Override
+                        public void accept(List<CreditCard> creditCards) throws Exception {
+                           processTasks(creditCards);
+                        }
+                    });
         mCompositeDisposable.add(disposable);
+    }
+
+    private void processTasks(@NonNull List<CreditCard> creditCards) {
+        if(creditCards.isEmpty()){
+            processEmptyCards();
+        }else{
+            mView.showCreditCards(creditCards);
+            showFilterLabel();
+        }
+    }
+
+    private void showFilterLabel() {
+        switch (mCurrFilterType){
+            case ACTIVE_CARDS:
+                mView.showActiveCreditCardFileter();
+                break;
+            case COMPLETED_CARDS:
+                mView.showNoCompletedCreditCards();
+                break;
+            case ALL_CARDS:
+            default:
+                mView.showAllCardsFilter();
+                break;
+        }
+
+    }
+
+    private void processEmptyCards() {
+        switch (mCurrFilterType){
+            case ACTIVE_CARDS:
+                mView.showNoActiveCreditCards();
+                break;
+            case COMPLETED_CARDS:
+                mView.showNoCompletedCreditCards();
+                break;
+            case ALL_CARDS:
+            default:
+                mView.showNoCreditCards();
+                break;
+        }
     }
 
     @Override
     public void addNewCreditCards() {
-
+        mView.showAddCreditCards();
     }
 
     @Override
     public void payment(CreditCard creditCard, float money) {
-
+        checkNotNull(creditCard);
+        mCreditCardRespository.repayment(creditCard,money);
+        loadCreditCards();
     }
 
     @Override
     public void bill(CreditCard creditCard, float money) {
+        checkNotNull(creditCard);
+        mCreditCardRespository.bill(creditCard,money);
+        loadCreditCards();
 
     }
 
     @Override
     public void openCreditCardDetials(CreditCard creditCard) {
-
+        checkNotNull(creditCard);
+        mView.showCreditCardDetailsUi(creditCard.getCardNumber());
     }
 
     @Override
     public void setFilterType(CreditCardFilterType filterType) {
+        mCurrFilterType = filterType;
 
     }
 
     @Override
     public CreditCardFilterType getCurrFilterType() {
-        return null;
+        return mCurrFilterType;
     }
 }

@@ -6,7 +6,7 @@ import android.os.Bundle;
 import com.zhou.life.R;
 
 
-public class MainActivity extends AppCompatActivity {
+public class CreditCardActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

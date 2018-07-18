@@ -53,6 +53,21 @@ public class CreditCardFragment implements CreditCardsContract.View {
     }
 
     @Override
+    public void showAddCreditCards() {
+
+    }
+
+    @Override
+    public void showCreditCardBilled() {
+
+    }
+
+    @Override
+    public void showCreditCardRepayment() {
+
+    }
+
+    @Override
     public void showCreateNewCreditCardSuccessFully() {
 
     }
