@@ -146,4 +146,14 @@ public class CreditCardPresenter implements CreditCardsContract.Presenter {
     public CreditCardFilterType getCurrFilterType() {
         return mCurrFilterType;
     }
+
+    @Override
+    public void subcribe() {
+        loadCreditCards();
+    }
+
+    @Override
+    public void unSubcribe() {
+        mCompositeDisposable.clear();
+    }
 }

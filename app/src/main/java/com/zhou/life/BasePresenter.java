@@ -7,4 +7,8 @@ package com.zhou.life;
  */
 
 public interface BasePresenter {
+
+    void subcribe();
+
+    void unSubcribe();
 }

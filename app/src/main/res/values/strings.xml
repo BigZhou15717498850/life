@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Life</string>
     <string name="bill">账单:%s</string>
+    <string name="no_creditcards">没有信用卡</string>
 </resources>
