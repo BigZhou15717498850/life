@@ -1,5 +1,8 @@
 package com.zhou.life.cards;
 
+import android.content.Intent;
+import android.widget.TableRow;
+
 import com.zhou.life.data.CreditCard;
 import com.zhou.life.data.source.CreditCardRespository;
 import com.zhou.life.utils.schedulers.BaseSchedulerProvider;
@@ -39,10 +42,14 @@ public class CreditCardPresenter implements CreditCardsContract.Presenter {
         this.mView = checkNotNull(mView);
         this.mSchedulerProvider = mSchedulerProvider;
         mCompositeDisposable = new CompositeDisposable();
+        this.mView.setPresenter(this);
     }
 
     @Override
-    public void loadCreditCards() {
+    public void loadCreditCards(boolean showLoadingUI) {
+        if (showLoadingUI) {
+            mView.showLoadingIndicator(true);
+        }
         mCompositeDisposable.clear();
         Disposable disposable = mCreditCardRespository
                 .getCreditCards()
@@ -62,11 +69,17 @@ public class CreditCardPresenter implements CreditCardsContract.Presenter {
                 .subscribeOn(mSchedulerProvider.io())
                 .observeOn(mSchedulerProvider.ui())
                 .subscribe(new Consumer<List<CreditCard>>() {
-                        @Override
-                        public void accept(List<CreditCard> creditCards) throws Exception {
-                           processTasks(creditCards);
-                        }
-                    });
+                    @Override
+                    public void accept(List<CreditCard> creditCards) throws Exception {
+                        processTasks(creditCards);
+                        mView.showLoadingIndicator(false);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        mView.showLoadingCardsError();
+                    }
+                });
         mCompositeDisposable.add(disposable);
     }
 
@@ -85,7 +98,7 @@ public class CreditCardPresenter implements CreditCardsContract.Presenter {
                 mView.showActiveCreditCardFileter();
                 break;
             case COMPLETED_CARDS:
-                mView.showNoCompletedCreditCards();
+                mView.showCompletedCreditCardsFilter();
                 break;
             case ALL_CARDS:
             default:
@@ -115,25 +128,30 @@ public class CreditCardPresenter implements CreditCardsContract.Presenter {
         mView.showAddCreditCards();
     }
 
-    @Override
-    public void payment(CreditCard creditCard, float money) {
-        checkNotNull(creditCard);
-        mCreditCardRespository.repayment(creditCard,money);
-        loadCreditCards();
-    }
-
-    @Override
-    public void bill(CreditCard creditCard, float money) {
-        checkNotNull(creditCard);
-        mCreditCardRespository.bill(creditCard,money);
-        loadCreditCards();
-
-    }
+//    @Override
+//    public void payment(CreditCard creditCard, float money) {
+//        checkNotNull(creditCard);
+//        mCreditCardRespository.repayment(creditCard,money);
+//        loadCreditCards();
+//    }
+//
+//    @Override
+//    public void bill(CreditCard creditCard, float money) {
+//        checkNotNull(creditCard);
+//        mCreditCardRespository.bill(creditCard,money);
+//        loadCreditCards();
+//
+//    }
 
     @Override
     public void openCreditCardDetials(CreditCard creditCard) {
         checkNotNull(creditCard);
         mView.showCreditCardDetailsUi(creditCard.getCardNumber());
+    }
+
+    @Override
+    public void onResult(int requestCode, int responseCode) {
+
     }
 
     @Override
@@ -149,7 +167,7 @@ public class CreditCardPresenter implements CreditCardsContract.Presenter {
 
     @Override
     public void subcribe() {
-        loadCreditCards();
+        loadCreditCards(true);
     }
 
     @Override

@@ -2,17 +2,24 @@ package com.zhou.life.cards;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.zhou.life.R;
 import com.zhou.life.data.CreditCard;
 
-import java.time.temporal.ValueRange;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,17 +41,13 @@ public class CreditCardFragment extends Fragment implements CreditCardsContract.
         public void onCardClick(CreditCard creditCard) {
             mPresenter.openCreditCardDetials(creditCard);
         }
-
-        @Override
-        public void onBill(CreditCard creditCard,float money) {
-            mPresenter.bill(creditCard,money);
-        }
-
-        @Override
-        public void onPayment(CreditCard creditCard,float money) {
-            mPresenter.payment(creditCard,money);
-        }
     };
+    private TextView mFilterLabel;
+    private View mllCards;
+    private View mllNoCards;
+    private ImageView mIvNoCards;
+    private TextView mTvNoCardHint;
+    private TextView mTvNoCardAdd;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,12 +55,31 @@ public class CreditCardFragment extends Fragment implements CreditCardsContract.
         adapter = new CreditCardAdapter(new ArrayList<>(),cardItemClickListener);
     }
 
+    public static CreditCardFragment newInstance() {
+        return new CreditCardFragment();
+    }
+    
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.creditcard_frag, container, false);
-        TextView filterLabel = (TextView) root.findViewById(R.id.tv_filter_label);
+        mFilterLabel = (TextView) root.findViewById(R.id.tv_filter_label);
+        mllCards = root.findViewById(R.id.ll_cards);
+        RecyclerView mCards = (RecyclerView) root.findViewById(R.id.cards);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
+        mCards.setHasFixedSize(true);
+        mCards.setLayoutManager(layoutManager);
+        mCards.setAdapter(adapter);
 
+        mllNoCards = root.findViewById(R.id.ll_nocards);
+        mIvNoCards = (ImageView) root.findViewById(R.id.iv_no_cards);
+        mTvNoCardHint = (TextView) root.findViewById(R.id.tv_no_cards_hint);
+        mTvNoCardAdd = (TextView) root.findViewById(R.id.tv_no_cards_add);
+
+        FloatingActionButton addNewCreditCard = (FloatingActionButton) getActivity().findViewById(R.id.fab_add_creditcard);
+        addNewCreditCard.setOnClickListener(__->mPresenter.addNewCreditCards());
+
+        setHasOptionsMenu(true);
         return root;
 
     }
@@ -76,71 +98,134 @@ public class CreditCardFragment extends Fragment implements CreditCardsContract.
 
     @Override
     public void showNoCreditCards() {
-
+        showNoCreditCardsView(
+                R.drawable.ic_assignment_turned_in_24dp,
+                getResources().getString(R.string.no_creditcards),
+                true);
     }
 
+    private void showNoCreditCardsView(int image,String hint,boolean showAddView){
+        mllCards.setVisibility(View.GONE);
+        mllNoCards.setVisibility(View.VISIBLE);
+
+        mIvNoCards.setImageDrawable(getResources().getDrawable(image));
+        mTvNoCardHint.setText(hint);
+        mTvNoCardAdd.setVisibility(showAddView?View.VISIBLE:View.GONE);
+    }
     @Override
     public void showCreditCards(List<CreditCard> creditCards) {
+        adapter.refreshData(creditCards);
 
+        mllNoCards.setVisibility(View.GONE);
+        mllCards.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void showCreditCardDetailsUi(String cardNum) {
-
+        // TODO: 2018/7/24 跳转
     }
 
     @Override
     public void showNoCompletedCreditCards() {
-
+        showNoCreditCardsView(
+                R.drawable.ic_verified_user_24dp,
+                getResources().getString(R.string.no_completed_creditcards),
+                false);
     }
 
     @Override
     public void showNoActiveCreditCards() {
-
+        showNoCreditCardsView(
+                R.drawable.ic_check_circle_24dp,
+                getResources().getString(R.string.no_active_creditcards),false
+        );
     }
 
     @Override
     public void showAllCardsFilter() {
-
+        mFilterLabel.setText(getResources().getString(R.string.all_cards));
     }
 
     @Override
     public void showCompletedCreditCardsFilter() {
-
+        mFilterLabel.setText(getResources().getString(R.string.all_completed_cards));
     }
 
     @Override
     public void showActiveCreditCardFileter() {
-
+        mFilterLabel.setText(getResources().getString(R.string.all_active_cards));
     }
 
     @Override
     public void showAddCreditCards() {
-
+        // TODO: 2018/7/24 跳到添加新卡片页面
     }
 
-    @Override
-    public void showCreditCardBilled() {
-
-    }
-
-    @Override
-    public void showCreditCardRepayment() {
-
-    }
 
     @Override
     public void showCreateNewCreditCardSuccessFully() {
+        showMessage(getResources().getString(R.string.create_new_card_success));
+    }
 
+    private void showMessage(String string) {
+        Snackbar.make(mllCards, string,Snackbar.LENGTH_SHORT);
     }
 
     @Override
-    public void isActive() {
+    public void showEditCreditCardSuccessFully() {
+        showMessage(getResources().getString(R.string.edit_card_success));
+    }
 
+    @Override
+    public boolean isActive() {
+       return isAdded();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_filter:
+                showCardFilterPopMenu();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.cards_fagment_menu,menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public void showCardFilterPopMenu() {
+        PopupMenu popupMenu = new PopupMenu(getContext(),getActivity().findViewById(R.id.menu_filter));
+        popupMenu.getMenuInflater().inflate(R.menu.cards_popupmenu,popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item->{
+            switch (item.getItemId()){
+                case R.id.all_filter:
+                    mPresenter.setFilterType(CreditCardFilterType.ALL_CARDS);
+                    break;
+                case R.id.active_filter:
+                    mPresenter.setFilterType(CreditCardFilterType.ACTIVE_CARDS);
+                    break;
+                case R.id.completed_filter:
+                    mPresenter.setFilterType(CreditCardFilterType.COMPLETED_CARDS);
+                    break;
+            }
+            mPresenter.loadCreditCards(false);
+            return true;
+        });
+        popupMenu.show();
+    }
+
+    @Override
+    public void showLoadingIndicator(boolean active) {
+
+    }
+
+    @Override
+    public void showLoadingCardsError() {
 
     }
 
@@ -151,12 +236,10 @@ public class CreditCardFragment extends Fragment implements CreditCardsContract.
     }
 
 
+
+
     public interface CardItemClickListener{
         void onCardClick(CreditCard creditCard);
-
-        void onBill(CreditCard creditCard,float money);
-
-        void onPayment(CreditCard creditCard,float money);
     }
 
     private static class CreditCardAdapter extends RecyclerView.Adapter<CreditCardAdapter.CreditCardViewHolder>{
@@ -165,10 +248,19 @@ public class CreditCardFragment extends Fragment implements CreditCardsContract.
         private CardItemClickListener mCardItemClickListener;
 
         public CreditCardAdapter(List<CreditCard> creditCards, CardItemClickListener mCardItemClickListener) {
-            this.creditCards = creditCards;
+            setList(creditCards);
             this.mCardItemClickListener = mCardItemClickListener;
         }
 
+       public void  refreshData(List<CreditCard> creditCards){
+            setList(creditCards);
+            notifyDataSetChanged();
+       }
+
+        private void setList(List<CreditCard> creditCards){
+            checkNotNull(creditCards);
+            this.creditCards = creditCards;
+        }
         @Override
         public CreditCardAdapter.CreditCardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());

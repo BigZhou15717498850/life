@@ -1,5 +1,7 @@
 package com.zhou.life.cards;
 
+import android.content.Intent;
+
 import com.zhou.life.BasePresenter;
 import com.zhou.life.BaseView;
 import com.zhou.life.data.CreditCard;
@@ -34,28 +36,28 @@ public class CreditCardsContract {
 
        void showAddCreditCards();
 
-       void showCreditCardBilled();
-
-       void showCreditCardRepayment();
-
        void showCreateNewCreditCardSuccessFully();
 
-       void isActive();
+        void showEditCreditCardSuccessFully();
+
+       boolean isActive();
 
        void showCardFilterPopMenu();
+
+       void showLoadingIndicator(boolean active);
+
+       void showLoadingCardsError();
     }
 
     interface Presenter extends BasePresenter{
 
-        void loadCreditCards();
+        void loadCreditCards(boolean showloadingUI);
 
         void addNewCreditCards();
 
-        void payment(CreditCard creditCard,float money);
-
-        void bill(CreditCard creditCard,float money);
-
         void openCreditCardDetials(CreditCard creditCard);
+
+        void onResult(int requestCode, int responseCode);
 
         void setFilterType(CreditCardFilterType filterType);
 
