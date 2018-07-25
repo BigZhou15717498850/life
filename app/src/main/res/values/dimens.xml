@@ -3,5 +3,5 @@
     <dimen name="fab_margin">10dp</dimen>
     <dimen name="filter_label_size">16sp</dimen>
     <dimen name="filter_padding">6dp</dimen>
-    <dimen name="text_widget_hight">35dp</dimen>
+    <dimen name="text_widget_hight">45dp</dimen>
 </resources>

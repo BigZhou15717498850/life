@@ -20,4 +20,5 @@
     <string name="repayment_date">还款日：</string>
     <string name="repayment_count">还款：</string>
     <string name="confirm">确定</string>
+    <string name="imcomplete_information">信息不完整</string>
 </resources>

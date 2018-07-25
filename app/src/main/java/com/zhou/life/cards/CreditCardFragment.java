@@ -18,6 +18,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.zhou.life.R;
+import com.zhou.life.addcards.AddCardsActivity;
 import com.zhou.life.data.CreditCard;
 
 import java.util.ArrayList;
@@ -159,6 +160,7 @@ public class CreditCardFragment extends Fragment implements CreditCardsContract.
     @Override
     public void showAddCreditCards() {
         // TODO: 2018/7/24 跳到添加新卡片页面
+        AddCardsActivity.start(getActivity());
     }
 
 
