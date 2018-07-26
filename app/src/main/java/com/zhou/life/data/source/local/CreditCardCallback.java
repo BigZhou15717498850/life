@@ -25,7 +25,7 @@ public class CreditCardCallback extends SupportSQLiteOpenHelper.Callback {
             + CreditCardEntry.DATE_BILL + TYPE_TEXT + COMMA_SEP
             + CreditCardEntry.DATE_REPAYMENT + TYPE_TEXT + COMMA_SEP
             + CreditCardEntry.BILL + TYPE_TEXT + COMMA_SEP
-            + CreditCardEntry.REPAYMENT + TYPE_TEXT + COMMA_SEP + ")";
+            + CreditCardEntry.REPAYMENT + TYPE_TEXT + ")";
 
     public CreditCardCallback() {
         super(DATABASE_VERSION);

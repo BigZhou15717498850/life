@@ -1,8 +1,10 @@
 package com.zhou.life.cards;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.widget.TableRow;
 
+import com.zhou.life.addcards.AddCardsActivity;
 import com.zhou.life.data.CreditCard;
 import com.zhou.life.data.source.CreditCardRespository;
 import com.zhou.life.utils.schedulers.BaseSchedulerProvider;
@@ -151,7 +153,9 @@ public class CreditCardPresenter implements CreditCardsContract.Presenter {
 
     @Override
     public void onResult(int requestCode, int responseCode) {
-
+        if(requestCode== AddCardsActivity.ADD_CARDS_CODE && responseCode== Activity.RESULT_OK){
+            mView.showCreateNewCreditCardSuccessFully();
+        }
     }
 
     @Override

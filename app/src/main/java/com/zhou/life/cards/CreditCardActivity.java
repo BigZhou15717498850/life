@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 import com.zhou.life.InJection;
 import com.zhou.life.R;
 import com.zhou.life.utils.ActivityUtils;
@@ -13,13 +15,14 @@ import com.zhou.life.utils.ActivityUtils;
 
 public class CreditCardActivity extends AppCompatActivity {
 
-    private static final String CURRENT_FILTER_TYPE = "current_filter_type";
+    public static final String CURRENT_FILTER_TYPE = "current_filter_type";
     private CreditCardFilterType mCreditCardFilterType;
     private CreditCardsContract.Presenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Logger.addLogAdapter(new AndroidLogAdapter());
         setContentView(R.layout.creditcard_act);
 
         Toolbar toolbar = findViewById(R.id.toolbar);

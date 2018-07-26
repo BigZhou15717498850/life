@@ -1,5 +1,6 @@
 package com.zhou.life.addcards;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,10 +19,10 @@ import com.zhou.life.utils.ActivityUtils;
  */
 public class AddCardsActivity extends AppCompatActivity {
 
-
-    public static void start(Context context) {
-        Intent starter = new Intent(context, AddCardsActivity.class);
-        context.startActivity(starter);
+    public static final int ADD_CARDS_CODE = 0x01;
+    public static void start(Activity activity) {
+        Intent starter = new Intent(activity, AddCardsActivity.class);
+        activity.startActivityForResult(starter,ADD_CARDS_CODE);
     }
 
     @Override

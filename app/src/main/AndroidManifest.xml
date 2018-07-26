@@ -20,6 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".addcards.AddCardsActivity"/>
+        <activity android:name=".cardsdetail.CardsDetailActivity"/>
     </application>
 
 </manifest>

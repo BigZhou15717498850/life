@@ -23,6 +23,8 @@ public class AddCardsConstract {
         void showDatePicker(int year, int month, int day);
 
         void showDate(String date);
+
+        void saveOk();
     }
 
     public interface Presenter extends BasePresenter{

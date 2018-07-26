@@ -1,5 +1,6 @@
 package com.zhou.life.cards;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -95,6 +96,12 @@ public class CreditCardFragment extends Fragment implements CreditCardsContract.
     public void onPause() {
         super.onPause();
         mPresenter.unSubcribe();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mPresenter.onResult(requestCode,resultCode);
     }
 
     @Override

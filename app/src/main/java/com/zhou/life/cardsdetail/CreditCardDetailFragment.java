@@ -1,4 +1,4 @@
-package com.zhou.life.addcards;
+package com.zhou.life.cardsdetail;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,33 +17,26 @@ import android.widget.TextView;
 
 import com.google.common.base.Strings;
 import com.zhou.life.R;
+import com.zhou.life.addcards.AddCardsConstract;
+import com.zhou.life.addcards.AddCardsFragment;
 import com.zhou.life.data.CreditCard;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-
 /**
- * @author 周志新
- * @date 2018/7/25 20:05
- * @description
+ * 作者 LY309313
+ * 日期 2018/7/26
+ * 描述
  */
-public class AddCardsFragment extends Fragment implements AddCardsConstract.View {
 
-    private AddCardsConstract.Presenter mPresenter;
+public class CreditCardDetailFragment extends Fragment implements CreditCardDetailContract.View {
+
+    private CreditCardDetailContract.Presenter mPresenter;
     private EditText mBankname;
     private EditText mCardNumber;
     private EditText mBill;
     private EditText mRepaymentCount;
     private TextView mRepaymentDate;
     private TextView mBillDate;
-
     private TextView mCurTvDate;
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
 
     @Nullable
     @Override
@@ -70,8 +63,8 @@ public class AddCardsFragment extends Fragment implements AddCardsConstract.View
         return root;
     }
 
-    public static AddCardsFragment newInstance() {
-        return new AddCardsFragment();
+    public static CreditCardDetailFragment newInstance() {
+        return new CreditCardDetailFragment();
     }
 
     @Override
@@ -98,7 +91,7 @@ public class AddCardsFragment extends Fragment implements AddCardsConstract.View
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(getResources().getString(R.string.add_cards_information_confirm))
                     .setMessage(stringBuilder.toString())
-                    .setPositiveButton(getResources().getString(R.string.confirm),(v,n)->mPresenter.saveCreditCard(creditCard))
+                    .setPositiveButton(getResources().getString(R.string.confirm),(v,n)->mPresenter.saveCard(creditCard))
                     .setNegativeButton(getResources().getString(R.string.cancel),(v,n)->v.dismiss()).show();
         }
     }
@@ -132,13 +125,49 @@ public class AddCardsFragment extends Fragment implements AddCardsConstract.View
     }
 
     @Override
-    public void saveOk() {
+    public void updateOk() {
         getActivity().setResult(Activity.RESULT_OK);
         getActivity().finish();
     }
 
     @Override
-    public void setPresenter(AddCardsConstract.Presenter presenter) {
-            this.mPresenter = presenter;
+    public void setPresenter(CreditCardDetailContract.Presenter presenter) {
+        this.mPresenter = presenter;
     }
+
+    @Override
+    public void showCardEmptyError() {
+        showMessage(getResources().getString(R.string.no_card));
+    }
+
+    @Override
+    public void setBankname(String backname) {
+        mBankname.setText(backname);
+    }
+
+    @Override
+    public void setCreditCardNumber(String cardNumber) {
+        mCardNumber.setText(cardNumber);
+    }
+
+    @Override
+    public void setDateBill(String dateBill) {
+        mBillDate.setText(dateBill);
+    }
+
+    @Override
+    public void setDatePayment(String datePayment) {
+        mRepaymentDate.setText(datePayment);
+    }
+
+    @Override
+    public void setBill(float bill) {
+        mBill.setText(bill+"");
+    }
+
+    @Override
+    public void setRepayment(float repayment) {
+        mRepaymentCount.setText(repayment+"");
+    }
+
 }

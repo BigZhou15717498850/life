@@ -5,12 +5,9 @@ import android.arch.persistence.db.SupportSQLiteOpenHelper.Configuration;
 import android.arch.persistence.db.SupportSQLiteOpenHelper.Factory;
 import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
 import android.content.Context;
-
 import com.orhanobut.logger.Logger;
-import com.squareup.sqlbrite3.BriteDatabase;
 import com.squareup.sqlbrite3.SqlBrite;
 
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * 作者 ly309313

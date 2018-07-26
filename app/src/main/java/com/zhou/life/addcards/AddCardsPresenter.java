@@ -48,6 +48,7 @@ public class AddCardsPresenter implements AddCardsConstract.Presenter {
     @Override
     public void saveCreditCard(CreditCard creditCard) {
             mCreditCardRespository.saveCreditCard(creditCard);
+            mView.saveOk();
     }
 
     @Override

@@ -69,6 +69,7 @@ public class CreditCardLocalDataSource implements CreditCardDataSource {
     public static void destoryInstance(){
         INSTANCE = null;
     }
+
     @NonNull
     private CreditCard getCreditCard(@NonNull Cursor cursor) {
         String bankname = cursor.getString(cursor.getColumnIndex(CreditCardEntry.BANK_NAME));

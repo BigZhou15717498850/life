@@ -21,4 +21,7 @@
     <string name="repayment_count">还款：</string>
     <string name="confirm">确定</string>
     <string name="imcomplete_information">信息不完整</string>
+    <string name="add_cards_information_confirm">信息确认</string>
+    <string name="cancel">取消</string>
+    <string name="no_card">没有这张卡片</string>
 </resources>
