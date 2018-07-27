@@ -1,6 +1,7 @@
 package com.zhou.life.cards;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -18,8 +19,10 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.orhanobut.logger.Logger;
 import com.zhou.life.R;
 import com.zhou.life.addcards.AddCardsActivity;
+import com.zhou.life.cardsdetail.CardsDetailActivity;
 import com.zhou.life.data.CreditCard;
 
 import java.util.ArrayList;
@@ -82,6 +85,7 @@ public class CreditCardFragment extends Fragment implements CreditCardsContract.
         addNewCreditCard.setOnClickListener(__->mPresenter.addNewCreditCards());
 
         setHasOptionsMenu(true);
+        Logger.i("初始化CreditCardFragment的View完成");
         return root;
 
     }
@@ -89,12 +93,14 @@ public class CreditCardFragment extends Fragment implements CreditCardsContract.
     @Override
     public void onResume() {
         super.onResume();
+        Logger.i("CreditCardFragment开始订阅数据");
         mPresenter.subcribe();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        Logger.i("CreditCardFragment取消订阅数据");
         mPresenter.unSubcribe();
     }
 
@@ -131,6 +137,7 @@ public class CreditCardFragment extends Fragment implements CreditCardsContract.
     @Override
     public void showCreditCardDetailsUi(String cardNum) {
         // TODO: 2018/7/24 跳转
+        CardsDetailActivity.start(getActivity(),cardNum);
     }
 
     @Override
@@ -294,6 +301,20 @@ public class CreditCardFragment extends Fragment implements CreditCardsContract.
             holder.tvDatePayment.setText(creditCard.getDateRepayment());
             holder.tvBill.setText("已出账单："+creditCard.getBill());
             holder.tvPayment.setText("已还款："+creditCard.getRepayment());
+            holder.tvBankname.setTag(creditCard);
+
+            if(creditCard.overBillDate()&&!creditCard.paymentComplete()){
+                holder.tvBill.setBackgroundColor(Color.RED);
+            }else{
+                holder.tvBill.setBackgroundColor(Color.TRANSPARENT);
+            }
+
+            if(creditCard.overRepaymentDate()&&!creditCard.paymentComplete()){
+                holder.tvDatePayment.setBackgroundColor(Color.RED);
+                holder.tvDatePayment.append("【已逾期】");
+            }else{
+                holder.tvDatePayment.setBackgroundColor(Color.TRANSPARENT);
+            }
         }
 
         @Override

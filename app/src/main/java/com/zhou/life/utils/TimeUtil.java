@@ -14,7 +14,7 @@ public class TimeUtil {
 
     private static final SimpleDateFormat DATE_BILL = new SimpleDateFormat("MM-dd", Locale.CHINA);
 
-    public static boolean overBillDate(String date){
+    public static boolean overDate(String date){
         Date today = new Date();
         String today_str = DATE_BILL.format(today);
         return today_str.compareToIgnoreCase(date) > 0;

@@ -86,14 +86,14 @@ public class AddCardsFragment extends Fragment implements AddCardsConstract.View
             showMessage(getResources().getString(R.string.imcomplete_information));
         }else{
             float bill = Strings.isNullOrEmpty(sbill)?0.0f:Float.parseFloat(sbill);
-            float repayment = Strings.isNullOrEmpty(srepayment)?0.0f:Float.parseFloat(sbill);
+            float repayment = Strings.isNullOrEmpty(srepayment)?0.0f:Float.parseFloat(srepayment);
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(bankname).append("\n")
-                    .append(cardNum).append("\n")
-                    .append(dateBill).append("\n")
-                    .append(sbill).append("\n")
-                    .append(repaymentDate).append("\n")
-                    .append(srepayment);
+            stringBuilder.append(getResources().getString(R.string.card_belong_to)).append(bankname).append("\n")
+                    .append(getResources().getString(R.string.card_number)).append(cardNum).append("\n")
+                    .append(getResources().getString(R.string.date_bill)).append(dateBill).append("\n")
+                    .append(getResources().getString(R.string.bill)).append(sbill).append("\n")
+                    .append(getResources().getString(R.string.repayment_date)).append(repaymentDate).append("\n")
+                    .append(getResources().getString(R.string.repayment_count)).append(srepayment);
             CreditCard creditCard = new CreditCard(bankname,cardNum,dateBill,repaymentDate,bill,repayment);
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(getResources().getString(R.string.add_cards_information_confirm))

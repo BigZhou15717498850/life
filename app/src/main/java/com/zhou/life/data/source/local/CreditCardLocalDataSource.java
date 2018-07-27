@@ -72,12 +72,12 @@ public class CreditCardLocalDataSource implements CreditCardDataSource {
 
     @NonNull
     private CreditCard getCreditCard(@NonNull Cursor cursor) {
-        String bankname = cursor.getString(cursor.getColumnIndex(CreditCardEntry.BANK_NAME));
-        String cardNum = cursor.getString(cursor.getColumnIndex(CreditCardEntry.CARD_NUM));
-        String datebill = cursor.getString(cursor.getColumnIndex(CreditCardEntry.DATE_BILL));
-        String dateRepayment = cursor.getString(cursor.getColumnIndex(CreditCardEntry.DATE_REPAYMENT));
-        float bill = cursor.getFloat(cursor.getColumnIndex(CreditCardEntry.BILL));
-        float repayment = cursor.getFloat(cursor.getColumnIndex(CreditCardEntry.REPAYMENT));
+        String bankname = cursor.getString(cursor.getColumnIndexOrThrow(CreditCardEntry.BANK_NAME));
+        String cardNum = cursor.getString(cursor.getColumnIndexOrThrow(CreditCardEntry.CARD_NUM));
+        String datebill = cursor.getString(cursor.getColumnIndexOrThrow(CreditCardEntry.DATE_BILL));
+        String dateRepayment = cursor.getString(cursor.getColumnIndexOrThrow(CreditCardEntry.DATE_REPAYMENT));
+        float bill = cursor.getFloat(cursor.getColumnIndexOrThrow(CreditCardEntry.BILL));
+        float repayment = cursor.getFloat(cursor.getColumnIndexOrThrow(CreditCardEntry.REPAYMENT));
         return new CreditCard(bankname, cardNum, datebill, dateRepayment, bill, repayment);
     }
 
@@ -120,11 +120,11 @@ public class CreditCardLocalDataSource implements CreditCardDataSource {
             checkNotNull(creditCard);
         ContentValues values = new ContentValues();
         values.put(CreditCardEntry.BANK_NAME,creditCard.getBankname());
-        values.put(CreditCardEntry.CARD_NUM,creditCard.getBankname());
-        values.put(CreditCardEntry.DATE_BILL,creditCard.getBankname());
-        values.put(CreditCardEntry.DATE_REPAYMENT,creditCard.getBankname());
-        values.put(CreditCardEntry.BILL,creditCard.getBankname());
-        values.put(CreditCardEntry.REPAYMENT,creditCard.getBankname());
+        values.put(CreditCardEntry.CARD_NUM,creditCard.getCardNumber());
+        values.put(CreditCardEntry.DATE_BILL,creditCard.getDateBill());
+        values.put(CreditCardEntry.DATE_REPAYMENT,creditCard.getDateRepayment());
+        values.put(CreditCardEntry.BILL,creditCard.getBill());
+        values.put(CreditCardEntry.REPAYMENT,creditCard.getRepayment());
         mDatabaseHelper.insert(CreditCardEntry.TABLE_NAME, SQLiteDatabase.CONFLICT_REPLACE,values);
     }
 

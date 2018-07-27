@@ -57,7 +57,8 @@ public class CreditCardRespository implements CreditCardDataSource {
         }else if(mCreditCardCaches==null){
             mCreditCardCaches = new LinkedHashMap<>();//插入、删除快，查询慢
         }
-        return getAndCacheCreditCard();
+        Flowable<List<CreditCard>> andCacheCreditCard = getAndCacheCreditCard();
+        return andCacheCreditCard;
 
     }
 

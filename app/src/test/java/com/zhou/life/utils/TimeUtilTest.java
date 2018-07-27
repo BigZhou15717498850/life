@@ -14,7 +14,7 @@ public class TimeUtilTest {
     public void overBillDateTest(){
         String date = "16-16";
 
-        boolean overed = TimeUtil.overBillDate(date);
+        boolean overed = TimeUtil.overDate(date);
 
         System.out.println("结果:==" + overed);
     }

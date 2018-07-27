@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.widget.TableRow;
 
+import com.orhanobut.logger.Logger;
 import com.zhou.life.addcards.AddCardsActivity;
 import com.zhou.life.data.CreditCard;
 import com.zhou.life.data.source.CreditCardRespository;
@@ -34,6 +35,7 @@ public class CreditCardPresenter implements CreditCardsContract.Presenter {
     private final BaseSchedulerProvider mSchedulerProvider;
 
     private CreditCardFilterType mCurrFilterType = CreditCardFilterType.ALL_CARDS;
+
     @NonNull
     private final CompositeDisposable mCompositeDisposable;
 
@@ -42,7 +44,7 @@ public class CreditCardPresenter implements CreditCardsContract.Presenter {
                                @NonNull BaseSchedulerProvider mSchedulerProvider) {
         this.mCreditCardRespository = checkNotNull(mCreditCardRespository);
         this.mView = checkNotNull(mView);
-        this.mSchedulerProvider = mSchedulerProvider;
+        this.mSchedulerProvider = checkNotNull(mSchedulerProvider);
         mCompositeDisposable = new CompositeDisposable();
         this.mView.setPresenter(this);
     }
@@ -55,30 +57,33 @@ public class CreditCardPresenter implements CreditCardsContract.Presenter {
         mCompositeDisposable.clear();
         Disposable disposable = mCreditCardRespository
                 .getCreditCards()
-                .flatMap(Flowable::fromIterable)
-                .filter(creditCard -> {
-                    switch (mCurrFilterType){
-                        case ACTIVE_CARDS:
-                            return creditCard.paymentActive();
-                        case COMPLETED_CARDS:
-                            return creditCard.paymentComplete();
-                        case ALL_CARDS:
-                            default:
-                            return true;
-                    }
-                })
-                .toList()
+//                .flatMap(Flowable::fromIterable)
+//                .filter(creditCard -> {
+//                    Logger.i("获取到卡片%s",creditCard.toString());
+//                    switch (mCurrFilterType){
+//                        case ACTIVE_CARDS:
+//                            return creditCard.paymentActive();
+//                        case COMPLETED_CARDS:
+//                            return creditCard.paymentComplete();
+//                        case ALL_CARDS:
+//                            default:
+//                            return true;
+//                    }
+//                })
+//                .toList()
                 .subscribeOn(mSchedulerProvider.io())
                 .observeOn(mSchedulerProvider.ui())
                 .subscribe(new Consumer<List<CreditCard>>() {
                     @Override
                     public void accept(List<CreditCard> creditCards) throws Exception {
+                        Logger.i("获取到卡片数量:%s",creditCards.size());
                         processTasks(creditCards);
                         mView.showLoadingIndicator(false);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
+                        Logger.i("出错了%s",throwable.getMessage());
                         mView.showLoadingCardsError();
                     }
                 });

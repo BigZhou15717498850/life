@@ -3,9 +3,13 @@ package com.zhou.life.data;
 import android.support.annotation.NonNull;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.zhou.life.utils.TimeUtil;
 
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 作者 ly309313
@@ -40,26 +44,35 @@ public class CreditCard {
      private final float mBill;
 
      private final float repayment;
-
+     @NonNull
+     private final List<String> payments;
 
      public CreditCard(@NonNull String bankname, @NonNull String cardNumber,
-                       @NonNull String dateBill, @NonNull String dateRepayment, float bill, float repayment) {
+                       @NonNull String dateBill, @NonNull String dateRepayment, float bill,@NonNull List<String> payments) {
           this.bankname = bankname;
           this.cardNumber = cardNumber;
           this.dateBill = dateBill;
           this.dateRepayment = dateRepayment;
           this.mBill = bill;
-          this.repayment = repayment;
+          this.payments=payments;
+          float tempPayment=0.0f;
+          if(!payments.isEmpty()){
+               for (String payment : payments) {
+                    String[] strs = payment.split("#");
+                    tempPayment+=Float.parseFloat(strs[1]);
+               }
+          }
+          this.repayment = tempPayment;
      }
 
      public CreditCard(@NonNull String bankname, @NonNull String cardNumber,
                        @NonNull String dateBill, @NonNull String dateRepayment, float bill) {
-          this(bankname,cardNumber,dateBill,dateRepayment,bill,0.0f);
+          this(bankname,cardNumber,dateBill,dateRepayment,bill, Collections.emptyList());
      }
 
      public CreditCard(@NonNull String bankname, @NonNull String cardNumber,
                        @NonNull String dateBill, @NonNull String dateRepayment) {
-          this(bankname,cardNumber,dateBill,dateRepayment,0.0f,0.0f);
+          this(bankname,cardNumber,dateBill,dateRepayment,0.0f,Collections.emptyList());
      }
      @NonNull
      public String getBankname() {
@@ -85,9 +98,11 @@ public class CreditCard {
           return mBill;
      }
 
-     public boolean voerBillDate(){
-          return TimeUtil.overBillDate(dateBill);
+     public boolean overBillDate(){
+          return TimeUtil.overDate(dateBill);
      }
+
+     public boolean overRepaymentDate(){return TimeUtil.overDate(dateRepayment);}
      public boolean paymentComplete(){
           if(repayment==0.0f && mBill>0){
                return false;
@@ -151,5 +166,17 @@ public class CreditCard {
      @Override
      public int hashCode() {
           return Objects.hashCode(bankname,cardNumber,dateBill,dateRepayment);
+     }
+
+     @Override
+     public String toString() {
+          return "CreditCard{" +
+                  "bankname='" + bankname + '\'' +
+                  ", cardNumber='" + cardNumber + '\'' +
+                  ", dateBill='" + dateBill + '\'' +
+                  ", dateRepayment='" + dateRepayment + '\'' +
+                  ", mBill=" + mBill +
+                  ", repayment=" + repayment +
+                  '}';
      }
 }

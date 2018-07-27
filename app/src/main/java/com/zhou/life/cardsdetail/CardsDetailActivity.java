@@ -25,14 +25,14 @@ public class CardsDetailActivity extends AppCompatActivity {
     public static final String EDIT_CARDS_KEY = "edit_cards_key";
     public static void start(Activity activity,String cardNumber) {
         Intent starter = new Intent(activity, CardsDetailActivity.class);
-        starter.putExtra(INPUT_METHOD_SERVICE,cardNumber);
+        starter.putExtra(EDIT_CARDS_KEY,cardNumber);
         activity.startActivityForResult(starter,EDIT_CARDS_CODE);
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.addcard_act);
+        setContentView(R.layout.carddetail_act);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

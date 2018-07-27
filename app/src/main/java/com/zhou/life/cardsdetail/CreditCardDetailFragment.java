@@ -41,7 +41,7 @@ public class CreditCardDetailFragment extends Fragment implements CreditCardDeta
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.addcard_frag, container, false);
+        View root = inflater.inflate(R.layout.carddetail_frag, container, false);
         mBankname = (EditText) root.findViewById(R.id.et_bankname);
         mCardNumber = (EditText) root.findViewById(R.id.et_card_number);
         mBill = (EditText) root.findViewById(R.id.et_bill);
@@ -58,7 +58,7 @@ public class CreditCardDetailFragment extends Fragment implements CreditCardDeta
             mPresenter.selectTime();
         } );
 
-        FloatingActionButton floatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab_confirm_creditcard);
+        FloatingActionButton floatingActionButton = (FloatingActionButton) getActivity().findViewById(R.id.fab_update_creditcard);
         floatingActionButton.setOnClickListener(__->mPresenter.confirm());
         return root;
     }
@@ -103,6 +103,18 @@ public class CreditCardDetailFragment extends Fragment implements CreditCardDeta
     @Override
     public boolean isActive() {
         return isAdded();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.subcribe();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mPresenter.unSubcribe();
     }
 
     @Override

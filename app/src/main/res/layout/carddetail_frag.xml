@@ -147,20 +147,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_repayment_date" />
 
-    <EditText
-        android:id="@+id/et_repayment_count"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/text_widget_hight"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:gravity="center"
-        android:inputType="number"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/tv_select_date_repayment" />
-
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
         android:layout_width="10dp"
@@ -168,5 +154,15 @@
         android:background="#0f0"
         android:orientation="vertical"
         app:layout_constraintGuide_begin="89dp" />
+
+    <LinearLayout
+        android:layout_width="278dp"
+        android:layout_height="286dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"></LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
